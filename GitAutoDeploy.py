@@ -35,7 +35,7 @@ class GitAutoDeploy(BaseHTTPRequestHandler):
         return myClass.config
 
     def do_POST(self):
-        if self.headers.getheader('x-github-event') != 'push':
+        if self.headers.get('x-github-event') != 'push':
             if not self.quiet:
                 print('We only handle push events')
             self.respond(304)
@@ -51,9 +51,9 @@ class GitAutoDeploy(BaseHTTPRequestHandler):
                 self.deploy(path)
 
     def parseRequest(self):
-        length = int(self.headers.getheader('content-length'))
+        length = int(self.headers.get('content-length'))
         body = self.rfile.read(length)
-        payload = json.loads(body)
+        payload = json.loads(body.decode())
         self.branch = payload['ref']
         return [payload['repository']['url']]
 
